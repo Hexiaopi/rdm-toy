@@ -198,6 +198,58 @@ func (c *KeyController) Delete(ctx *gin.Context) error {
 	return nil
 }
 
+type DeleteValueReq struct {
+	Fields []string `json:"fields"`
+}
+
+func (c *KeyController) DeleteField(ctx *gin.Context) error {
+	var req DeleteValueReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		return retcode.DeleteFieldFail
+	}
+	conn, err := c.Conn.Conn(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	key := ctx.Param("key")
+	keyType, err := conn.Type(ctx, key).Result()
+	if err != nil {
+		return retcode.GetKeyFail
+	}
+	switch keyType {
+	case "hash":
+		_, err = conn.HDel(ctx, key, req.Fields...).Result()
+	case "list":
+		for _, field := range req.Fields {
+			_, err = conn.LRem(ctx, key, 0, field).Result()
+			if err != nil {
+				return retcode.DeleteFieldFail
+			}
+		}
+	case "set":
+		fields := make([]interface{}, 0, len(req.Fields))
+		for _, field := range req.Fields {
+			fields = append(fields, field)
+		}
+		_, err = conn.SRem(ctx, key, fields...).Result()
+	case "zset":
+		fields := make([]interface{}, 0, len(req.Fields))
+		for _, field := range req.Fields {
+			fields = append(fields, field)
+		}
+		_, err = conn.ZRem(ctx, key, fields...).Result()
+	case "stream":
+		_, err = conn.XDel(ctx, key, req.Fields...).Result()
+	default:
+		return retcode.UnknownKeyType
+	}
+	if err != nil {
+		return retcode.DeleteFieldFail
+	}
+	return nil
+}
+
 type PatchNameReq struct {
 	Name string `json:"name"`
 }

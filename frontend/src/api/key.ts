@@ -37,6 +37,14 @@ export function deleteKeys(conn: string, db: string) {
     })
 }
 
+export function deleteKeyField(conn: string, db: string, key: string, data: any) {
+    return request({
+        url: `/api/v1/conn/${conn}/db/${db}/key/${key}/field`,
+        method: 'delete',
+        data: data,
+    })
+}
+
 
 export function patchKeyName(conn: string, db: string, key: string, name: string) {
     return request({

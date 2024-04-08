@@ -13,12 +13,11 @@
             <el-table-column prop="key" label="字段">
             </el-table-column>
             <el-table-column prop="value" label="值">
-
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="120">
                 <template #default="scope">
                     <el-button link type="primary" size="small" @click="handleEdit(scope.$index)">编辑</el-button>
-                    <el-button link type="warning" size="small">删除</el-button>
+                    <el-button link type="warning" size="small" @click="handleDelete(scope.row.key)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -29,8 +28,20 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue';
 import KeyInfo from './KeyInfo.vue';
+import { ElMessage } from 'element-plus'
+import { deleteKeyField } from '@/api/key';
+import { useConnStore } from '@/store/Conn';
+import { useDBStore } from '@/store/DB';
 
-let props = defineProps(['type', 'name', 'ttl', 'value'])
+const connStore = useConnStore()
+const dbStore = useDBStore()
+
+let props = defineProps({
+    type: { type: String, default: '' },
+    name: { type: String, default: '' },
+    ttl: { type: Number, default: 0 },
+    value: { type: Array, default: [] },
+})
 
 const list = reactive([])
 
@@ -41,7 +52,18 @@ for (let i in props.value) {
 
 const editIndex = ref(-1)
 
-const handleEdit = (index) => {
+const handleEdit = (index: number) => {
     editIndex.value = index
+}
+
+function handleDelete(row: string) {
+    let data = []
+    data.push(row)
+    deleteKeyField(connStore.current, dbStore.current, props.name, { "fields": data }).then(() => {
+        ElMessage({
+            type: 'success',
+            message: '删除成功',
+        })
+    })
 }
 </script>
