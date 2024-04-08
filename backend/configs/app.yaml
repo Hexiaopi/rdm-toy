@@ -1,0 +1,12 @@
+
+redis:
+  "local":
+    host: "127.0.0.1"
+    port: "6379"
+    username: 
+    password: 
+  "dev":
+    host: "172.16.16.34"
+    port: "6379"
+    username: 
+    password: 
