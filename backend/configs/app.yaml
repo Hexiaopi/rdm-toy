@@ -5,8 +5,3 @@ redis:
     port: "6379"
     username: 
     password: 
-  "dev":
-    host: "172.16.16.34"
-    port: "6379"
-    username: 
-    password: 

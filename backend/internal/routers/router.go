@@ -50,6 +50,8 @@ func NewRouter() *gin.Engine {
 	v1Router.GET("/conn/:conn/db/:db/key/:key", app.WrapData(keyController.Get))
 	v1Router.POST("/conn/:conn/db/:db/key", app.Wrap(keyController.Create))
 	v1Router.DELETE("/conn/:conn/db/:db/key/:key", app.Wrap(keyController.Delete))
+	v1Router.POST("/conn/:conn/db/:db/key/:key/field", app.Wrap(keyController.CreateField))
+	v1Router.PATCH("/conn/:conn/db/:db/key/:key/field", app.Wrap(keyController.PatchField))
 	v1Router.DELETE("/conn/:conn/db/:db/key/:key/field", app.Wrap(keyController.DeleteField))
 	v1Router.PATCH("/conn/:conn/db/:db/key/:key/name", app.Wrap(keyController.PatchName))
 	v1Router.PATCH("/conn/:conn/db/:db/key/:key/ttl", app.Wrap(keyController.PatchTTL))

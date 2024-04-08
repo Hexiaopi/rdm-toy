@@ -198,12 +198,123 @@ func (c *KeyController) Delete(ctx *gin.Context) error {
 	return nil
 }
 
-type DeleteValueReq struct {
+type CreateFieldReq struct {
+	Way   string      `json:"way,omitempty"`
+	Field string      `json:"field,omitempty"`
+	Id    string      `json:"id"`
+	Value interface{} `json:"value"`
+}
+
+func (c *KeyController) CreateField(ctx *gin.Context) error {
+	var req CreateFieldReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		return retcode.CreateFieldFail
+	}
+	conn, err := c.Conn.Conn(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	key := ctx.Param("key")
+	keyType, err := conn.Type(ctx, key).Result()
+	if err != nil {
+		return retcode.GetKeyFail
+	}
+	switch keyType {
+	case "hash":
+		fields := make([]interface{}, 0, 2)
+		fields = append(fields, req.Field)
+		fields = append(fields, req.Value)
+		_, err = conn.HSet(ctx, key, fields...).Result()
+	case "list":
+		switch req.Way {
+		case "left":
+			_, err = conn.LPushX(ctx, key, req.Value).Result()
+		case "right":
+			_, err = conn.RPushX(ctx, key, req.Value).Result()
+		default:
+			_, err = conn.RPushX(ctx, key, req.Value).Result()
+		}
+	case "set":
+		_, err = conn.SAdd(ctx, key, req.Value).Result()
+	case "zset":
+		score := req.Value
+		sc, _ := strconv.ParseFloat(score.(string), 64)
+		member := req.Field
+		_, err = conn.ZAdd(ctx, key, redis.Z{Score: sc, Member: member}).Result()
+	case "stream":
+		id := req.Id
+		values := make(map[string]interface{}, 0)
+		values[req.Field] = req.Value
+		_, err = conn.XAdd(ctx, &redis.XAddArgs{Stream: key, ID: id, Values: values}).Result()
+	default:
+		return retcode.NotSupportKeyType
+	}
+	if err != nil {
+		return retcode.CreateFieldFail
+	}
+	return nil
+}
+
+type PatchFieldReq struct {
+	Field string      `json:"field"`
+	Index int64       `json:"index"`
+	Value interface{} `json:"value"`
+}
+
+func (c *KeyController) PatchField(ctx *gin.Context) error {
+	var req PatchFieldReq
+	if err := ctx.ShouldBind(&req); err != nil {
+		return retcode.PatchFieldFail
+	}
+	conn, err := c.Conn.Conn(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	key := ctx.Param("key")
+	keyType, err := conn.Type(ctx, key).Result()
+	if err != nil {
+		return retcode.GetKeyFail
+	}
+	switch keyType {
+	case "hash":
+		fields := make([]interface{}, 0, 2)
+		fields = append(fields, req.Field)
+		fields = append(fields, req.Value)
+		_, err = conn.HSet(ctx, key, fields...).Result()
+	case "list":
+		_, err = conn.LSet(ctx, key, req.Index, req.Value).Result()
+	case "set":
+		_, err = conn.SRem(ctx, key, req.Field).Result()
+		if err != nil {
+			return retcode.PatchFieldFail
+		}
+		_, err = conn.SAdd(ctx, key, req.Value).Result()
+	case "zset":
+		_, err = conn.ZRem(ctx, key, req.Field).Result()
+		if err != nil {
+			return retcode.PatchFieldFail
+		}
+		score := req.Value
+		sc, _ := strconv.ParseFloat(score.(string), 64)
+		member := req.Field
+		_, err = conn.ZAdd(ctx, key, redis.Z{Score: sc, Member: member}).Result()
+	default:
+		return retcode.NotSupportKeyType
+	}
+	if err != nil {
+		return retcode.PatchFieldFail
+	}
+	return nil
+}
+
+type DeleteFieldReq struct {
 	Fields []string `json:"fields"`
 }
 
 func (c *KeyController) DeleteField(ctx *gin.Context) error {
-	var req DeleteValueReq
+	var req DeleteFieldReq
 	if err := ctx.ShouldBind(&req); err != nil {
 		return retcode.DeleteFieldFail
 	}
@@ -242,7 +353,7 @@ func (c *KeyController) DeleteField(ctx *gin.Context) error {
 	case "stream":
 		_, err = conn.XDel(ctx, key, req.Fields...).Result()
 	default:
-		return retcode.UnknownKeyType
+		return retcode.NotSupportKeyType
 	}
 	if err != nil {
 		return retcode.DeleteFieldFail

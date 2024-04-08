@@ -45,6 +45,22 @@ export function deleteKeyField(conn: string, db: string, key: string, data: any)
     })
 }
 
+export function addKeyField(conn: string, db: string, key: string, data: any) {
+    return request({
+        url: `/api/v1/conn/${conn}/db/${db}/key/${key}/field`,
+        method: 'post',
+        data: data,
+    })
+}
+
+export function pathcKeyField(conn: string, db: string, key: string, data: any) {
+    return request({
+        url: `/api/v1/conn/${conn}/db/${db}/key/${key}/field`,
+        method: 'patch',
+        data: data,
+    })
+}
+
 
 export function patchKeyName(conn: string, db: string, key: string, name: string) {
     return request({
