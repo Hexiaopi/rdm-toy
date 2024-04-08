@@ -37,6 +37,19 @@ func (c *KeyController) List(ctx *gin.Context) (res interface{}, total int64, er
 	return resp, int64(len(keys)), nil
 }
 
+func (c *KeyController) DeleteKeys(ctx *gin.Context) error {
+	conn, err := c.Conn.Conn(ctx)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+	_, err = conn.FlushDB(ctx).Result()
+	if err != nil {
+		return retcode.DeleteKeysFail
+	}
+	return nil
+}
+
 func (c *KeyController) Get(ctx *gin.Context) (res interface{}, err error) {
 	conn, err := c.Conn.Conn(ctx)
 	if err != nil {

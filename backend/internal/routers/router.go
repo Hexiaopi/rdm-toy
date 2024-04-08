@@ -46,6 +46,7 @@ func NewRouter() *gin.Engine {
 
 	keyController := v1.KeyController{Conn: dbController}
 	v1Router.GET("/conn/:conn/db/:db/keys", app.WrapList(keyController.List))
+	v1Router.DELETE("/conn/:conn/db/:db/keys", app.Wrap(keyController.DeleteKeys))
 	v1Router.GET("/conn/:conn/db/:db/key/:key", app.WrapData(keyController.Get))
 	v1Router.POST("/conn/:conn/db/:db/key", app.Wrap(keyController.Create))
 	v1Router.DELETE("/conn/:conn/db/:db/key/:key", app.Wrap(keyController.Delete))

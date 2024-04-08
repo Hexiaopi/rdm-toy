@@ -32,6 +32,7 @@ var (
 	UpdateKeyFail   = NewCode("101204", "Update Redis Key Fail")
 	DeleteKeyFail   = NewCode("101205", "Delete Redis Key Fail")
 	ExistKeyAlready = NewCode("101206", "Redis Key Already Exist")
+	DeleteKeysFail  = NewCode("101207", "Delete Redis Keys Fail")
 
 	UnknownError = NewCode("999999", "Unknown Error")
 )
