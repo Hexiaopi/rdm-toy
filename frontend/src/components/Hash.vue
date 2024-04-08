@@ -17,7 +17,7 @@
             <el-table-column fixed="right" label="操作" width="120">
                 <template #default="scope">
                     <el-button link type="primary" size="small" @click="handleEdit(scope.$index)">编辑</el-button>
-                    <el-button link type="warning" size="small" @click="handleDelete(scope.row.key)">删除</el-button>
+                    <el-button link type="warning" size="small" @click="handleDelete(scope.$index)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -40,7 +40,7 @@ let props = defineProps({
     type: { type: String, default: '' },
     name: { type: String, default: '' },
     ttl: { type: Number, default: 0 },
-    value: { type: Array, default: [] },
+    value: { type: Object, default: {} },
 })
 
 const list = reactive([])
@@ -56,10 +56,11 @@ const handleEdit = (index: number) => {
     editIndex.value = index
 }
 
-function handleDelete(row: string) {
-    let data = []
-    data.push(row)
+function handleDelete(index: number) {
+    let data = [];
+    data.push(list[index].key);
     deleteKeyField(connStore.current, dbStore.current, props.name, { "fields": data }).then(() => {
+        list.splice(index, 1);
         ElMessage({
             type: 'success',
             message: '删除成功',

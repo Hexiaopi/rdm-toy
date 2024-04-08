@@ -20,7 +20,7 @@
             <el-table-column fixed="right" label="操作" width="120">
                 <template #default="scope">
                     <el-button link type="primary" size="small" @click="handleEdit(scope.$index)">编辑</el-button>
-                    <el-button link type="warning" size="small" @click="handleDelete(scope.row.ID)">删除</el-button>
+                    <el-button link type="warning" size="small" @click="handleDelete(scope.$index)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -52,10 +52,11 @@ const handleEdit = (index: number) => {
     editIndex.value = index
 }
 
-function handleDelete(row: string) {
+function handleDelete(index: number) {
     let data = []
-    data.push(row)
+    data.push(props.value[index].ID);
     deleteKeyField(connStore.current, dbStore.current, props.name, { "fields": data }).then(() => {
+        props.value.splice(index, 1);
         ElMessage({
             type: 'success',
             message: '删除成功',
