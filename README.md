@@ -3,6 +3,10 @@
 
 redis view manage tool
 
+<p align="center">
+English | <a href="README_CN.md">简体中文</a>
+</p>
+
 ## Features
 
 - redis manage
