@@ -70,6 +70,10 @@ redis 可视化管理工具
 ![db](./docs/images/db-1.png)
 ![key](./docs/images/key-1.png)
 
+## 收藏历史
+
+[![Star History Chart](https://api.star-history.com/svg?repos=hexiaopi/rdm-toy&type=Date)](https://star-history.com/#hexiaopi/rdm-toy&Date)
+
 
 ## 许可证
 

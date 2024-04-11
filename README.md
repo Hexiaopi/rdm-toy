@@ -75,6 +75,10 @@ English | <a href="README_CN.md">简体中文</a>
 ![key](./docs/images/key-1.png)
 
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=hexiaopi/rdm-toy&type=Date)](https://star-history.com/#hexiaopi/rdm-toy&Date)
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
