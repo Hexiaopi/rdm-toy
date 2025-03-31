@@ -1,6 +1,10 @@
 
 # rdm-toy
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/hexiaopi/rdm-toy)](https://goreportcard.com/report/github.com/hexiaopi/rdm-toy)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/hexiaopi/rdm-toy)](https://github.com/Hexiaopi/rdm-toy)
+
 redis 可视化管理工具
 
 ## 功能
