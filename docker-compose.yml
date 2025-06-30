@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  backend:
+    build: .
+    container_name: rdm-backend
+    ports:
+      - "8080:8080"
+    restart: always
+    volumes:
+      - ./configs:/app/configs
+  frontend:
+    build: ./web
+    container_name: rdm-frontend
+    ports:
+      - "1080:80"
+    depends_on:
+      - backend
+    restart: always
+    volumes:
+      - ./web/nginx.conf:/etc/nginx/nginx.conf
+  redis:
+    image: redis:alpine
+    container_name: rdm-redis
+    # ports:
+    #   - "6379:6379"
+    restart: always
